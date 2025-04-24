@@ -130,14 +130,16 @@ class AsyncIBOptionChainSaver:
             # Set longer timeout values for the client connection
             self.ib.client.RaiseRequestErrors = True
             self.ib.client.MaxRequests = 100
+            print('--- connecting now ---')
+
             # Set a longer connection timeout
             self.ib.RequestTimeout = max(self.timeout, 60)  # At least 60 seconds
-            
             self.logger.info(f"Attempting to connect to IB at {self.host}:{self.port} with clientId {self.client_id}")
             self.logger.info(f"Connection timeout set to {self.timeout} seconds")
             
             # Connect without additional wait_for timeout
             await self.ib.connectAsync(self.host, self.port, clientId=self.client_id, readonly=True)
+            self.ib.reqMarketDataType(3)
             
             self.logger.info(f"Successfully connected to IB at {self.host}:{self.port}")
             self.logger.info(f"TWS/Gateway version: {self.ib.client.serverVersion()}")
@@ -224,7 +226,7 @@ class AsyncIBOptionChainSaver:
         """Get the current price of the underlying asset."""
         try:
             self.logger.debug(f"Requesting market data for {contract.symbol}")
-            ticker = await self.ib.reqMktDataAsync(contract, '')
+            ticker = await self.ib.reqMarketData(contract, '')
             await asyncio.sleep(0.5)  # Give time for market data to arrive
             
             self.logger.debug(f"Received market data for {contract.symbol}: marketPrice={ticker.marketPrice()}, last={ticker.last}, close={ticker.close}")
@@ -296,7 +298,12 @@ class AsyncIBOptionChainSaver:
         for contract in contracts:
             try:
                 self.logger.debug(f"Requesting market data for {contract.symbol} {contract.right} {contract.strike} {contract.lastTradeDateOrContractMonth}")
-                ticker = self.ib.reqMktData(contract, genericTickList='100,101,104,106,Greeks')
+                # Legal ones for (OPT) are: 100(Option Volume),101(Option Open Interest),105(Average Opt Volume),106(impvolat),165(Misc. Stats),221/220(Creditman Mark Price)
+                #                           ,225(Auction),232/221(Pl Price),233(RTVolume),236(inventory),258/47(Fundamentals),292(Wide_news),293(TradeCount),294(TradeRate),
+                #                           295(VolumeRate),318(LastRTHTrade),375(RTTrdVolume),411(rthistvol),456/59(IBDividends),460(Bond Factor Multiplier),
+                #                           577(EtfNavLast(navlast)),586(IPOHLMPRC),587(Pl Price Delayed),588(Futures Open Interest),595(Short-Term Volume X Mins),
+                #                           614(EtfNavMisc(high/low)),619(Creditman Slow Mark Price),623(EtfFrozenNavLast(fznavlast))
+                ticker = self.ib.reqMktData(contract, genericTickList='100,101,105,106,165,221,225,232,233,236,258,293,294,295,318,375,411,577,586,587,588,595,614,619,623')
                 tickers[ticker] = contract
             except Exception as e:
                 self.logger.error(f"Error requesting market data: {e}")
