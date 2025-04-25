@@ -10,6 +10,10 @@ Most of my data management is through SQLite.
 
 This script intends to train, execute or backtest hidden markov models (HMM's) using average true range (ATR)
 
+- [x] Get `collect' mode working
+- [ ] Get `Backtest' mode working
+- [ ] Get `Execute' mode working (less important for this specific project)      
+
 ## Get options
 
 This intends to save live option data from IB and save to a sqlite3 .db.
