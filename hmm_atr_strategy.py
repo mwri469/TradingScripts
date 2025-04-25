@@ -168,6 +168,7 @@ class DataCollector:
                 print(f"Contract qualified: {contract}")
                 
                 # Request historical data
+                
                 bars = await self.ib.reqHistoricalDataAsync(
                     contract, 
                     endDateTime='', 
