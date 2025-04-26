@@ -1,0 +1,401 @@
+2025-04-25 14:45:54,568 - __main__ - INFO - Starting HMM-ATR Strategy in collect mode
+2025-04-25 14:45:54,568 - __main__ - INFO - Loaded 3 tickers from tickers.txt
+2025-04-25 14:45:54,571 - __main__ - INFO - Collecting data for 3 tickers with lookback 2 Y and bar size 1 day
+2025-04-25 14:45:54,571 - __main__ - INFO - Connecting to Interactive Brokers at 127.0.0.1:7497 with client ID 1
+2025-04-25 14:45:54,994 - __main__ - INFO - Connected to Interactive Brokers
+2025-04-25 14:45:54,994 - __main__ - INFO - Collecting data for AAPL...
+2025-04-25 14:45:56,428 - __main__ - INFO - Stored 501 bars for AAPL
+2025-04-25 14:45:57,429 - __main__ - INFO - Collecting data for TSLA...
+2025-04-25 14:45:58,857 - __main__ - INFO - Stored 501 bars for TSLA
+2025-04-25 14:45:59,859 - __main__ - INFO - Collecting data for RKLBB...
+2025-04-25 14:46:00,522 - __main__ - WARNING - No bars received for RKLBB
+2025-04-25 14:46:01,524 - __main__ - INFO - 
+Data collection complete!
+2025-04-25 14:46:01,524 - __main__ - INFO - Processed 3 tickers
+2025-04-25 14:46:01,524 - __main__ - INFO - Success: 2
+2025-04-25 14:46:01,525 - __main__ - INFO - Errors: 1
+2025-04-25 14:46:01,525 - __main__ - INFO - 
+Database Statistics:
+2025-04-25 14:46:01,525 - __main__ - INFO - Database contains 13 symbols
+2025-04-25 14:46:01,541 - __main__ - INFO -   AAPL: 2497 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:45:56.427801
+2025-04-25 14:46:01,570 - __main__ - INFO -   BMY: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:29:51.659517
+2025-04-25 14:46:01,590 - __main__ - INFO -   GOOG: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:27:39.405022
+2025-04-25 14:46:01,610 - __main__ - INFO -   HON: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:29:20.964048
+2025-04-25 14:46:01,628 - __main__ - INFO -   M: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:27:09.233268
+2025-04-25 14:46:01,645 - __main__ - INFO -   MSFT: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:28:26.929185
+2025-04-25 14:46:01,663 - __main__ - INFO -   OXY: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:25:45.284626
+2025-04-25 14:46:01,681 - __main__ - ERROR - Unhandled exception: '<=' not supported between instances of 'Timestamp' and 'float'
+2025-04-25 14:46:01,683 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/martinwright/Documents/Projects/trading/hmm_atr_strategy.py", line 664, in main
+    await collect_data_mode(args)
+  File "/Users/martinwright/Documents/Projects/trading/hmm_atr_strategy.py", line 519, in collect_data_mode
+    collector.show_database_stats()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/martinwright/Documents/Projects/trading/hmm_atr_strategy.py", line 287, in show_database_stats
+    date_range = f"{df.index.min().date()} to {df.index.max().date()}" if not df.empty else "No data"
+                    ~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/indexes/base.py", line 7467, in min
+    return nanops.nanmin(self._values, skipna=skipna)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/nanops.py", line 147, in f
+    result = alt(values, axis=axis, skipna=skipna, **kwds)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/nanops.py", line 404, in new_func
+    result = func(values, axis=axis, skipna=skipna, mask=mask, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/nanops.py", line 1098, in reduction
+    result = getattr(values, meth)(axis)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/numpy/_core/_methods.py", line 48, in _amin
+    return umr_minimum(a, axis, None, out, keepdims, initial, where)
+TypeError: '<=' not supported between instances of 'Timestamp' and 'float'
+
+2025-04-25 15:42:49,299 - __main__ - INFO - Starting HMM-ATR Strategy in collect mode
+2025-04-25 15:42:49,300 - __main__ - INFO - Loaded 3 tickers from tickers.txt
+2025-04-25 15:42:49,302 - __main__ - INFO - Collecting data for 3 tickers with lookback 2 Y and bar size 1 day
+2025-04-25 15:42:49,302 - __main__ - INFO - Connecting to Interactive Brokers at 127.0.0.1:7497 with client ID 1
+2025-04-25 15:42:49,713 - __main__ - INFO - Connected to Interactive Brokers
+2025-04-25 15:42:49,713 - __main__ - INFO - Collecting data for AAPL...
+2025-04-25 15:42:51,056 - __main__ - INFO - Stored 501 bars for AAPL
+2025-04-25 15:42:52,057 - __main__ - INFO - Collecting data for TSLA...
+2025-04-25 15:42:53,486 - __main__ - INFO - Stored 501 bars for TSLA
+2025-04-25 15:42:54,488 - __main__ - INFO - Collecting data for RKLBB...
+2025-04-25 15:42:55,125 - __main__ - WARNING - No bars received for RKLBB
+2025-04-25 15:42:56,127 - __main__ - INFO - 
+Data collection complete!
+2025-04-25 15:42:56,127 - __main__ - INFO - Processed 3 tickers
+2025-04-25 15:42:56,127 - __main__ - INFO - Success: 2
+2025-04-25 15:42:56,127 - __main__ - INFO - Errors: 1
+2025-04-25 15:42:56,127 - __main__ - INFO - 
+Database Statistics:
+2025-04-25 15:42:56,128 - __main__ - INFO - Database contains 13 symbols
+2025-04-25 15:42:56,148 - __main__ - INFO - DatetimeIndex(['2023-04-26',        'NaT',        'NaT',        'NaT',
+                      'NaT', '2023-04-27',        'NaT',        'NaT',
+                      'NaT',        'NaT',
+               ...
+               '2025-04-23',        'NaT',        'NaT',        'NaT',
+                      'NaT', '2025-04-24',        'NaT',        'NaT',
+                      'NaT',        'NaT'],
+              dtype='datetime64[ns]', name='datetime', length=2497, freq=None)
+2025-04-25 15:42:56,150 - __main__ - INFO -   AAPL: 2497 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T15:42:51.055449
+2025-04-25 15:42:56,181 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-25 15:42:56,182 - __main__ - INFO -   BMY: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:29:51.659517
+2025-04-25 15:42:56,203 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-25 15:42:56,203 - __main__ - INFO -   GOOG: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:27:39.405022
+2025-04-25 15:42:56,221 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-25 15:42:56,222 - __main__ - INFO -   HON: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:29:20.964048
+2025-04-25 15:42:56,240 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-25 15:42:56,241 - __main__ - INFO -   M: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:27:09.233268
+2025-04-25 15:42:56,258 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-25 15:42:56,258 - __main__ - INFO -   MSFT: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:28:26.929185
+2025-04-25 15:42:56,275 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-25 15:42:56,275 - __main__ - INFO -   OXY: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:25:45.284626
+2025-04-25 15:42:56,293 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+                             NaT, 2025-04-23 09:30:00-04:00,
+       2025-04-23 10:00:00-04:00, 2025-04-23 12:00:00-04:00,
+       2025-04-23 14:00:00-04:00,                       NaT,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=2361)
+2025-04-25 15:42:56,293 - __main__ - ERROR - Unhandled exception: '<=' not supported between instances of 'Timestamp' and 'float'
+2025-04-25 15:42:56,296 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/martinwright/Documents/Projects/trading/hmm_atr_strategy.py", line 665, in main
+    await collect_data_mode(args)
+  File "/Users/martinwright/Documents/Projects/trading/hmm_atr_strategy.py", line 520, in collect_data_mode
+    collector.show_database_stats()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/martinwright/Documents/Projects/trading/hmm_atr_strategy.py", line 288, in show_database_stats
+    date_range = f"{df.index.min().date()} to {df.index.max().date()}" if not df.empty else "No data"
+                    ~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/indexes/base.py", line 7467, in min
+    return nanops.nanmin(self._values, skipna=skipna)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/nanops.py", line 147, in f
+    result = alt(values, axis=axis, skipna=skipna, **kwds)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/nanops.py", line 404, in new_func
+    result = func(values, axis=axis, skipna=skipna, mask=mask, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/nanops.py", line 1098, in reduction
+    result = getattr(values, meth)(axis)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/numpy/_core/_methods.py", line 48, in _amin
+    return umr_minimum(a, axis, None, out, keepdims, initial, where)
+TypeError: '<=' not supported between instances of 'Timestamp' and 'float'
+
+2025-04-26 12:45:12,628 - __main__ - INFO - Starting HMM-ATR Strategy in collect mode
+2025-04-26 12:45:12,629 - __main__ - INFO - Loaded 3 tickers from tickers.txt
+2025-04-26 12:45:12,630 - __main__ - INFO - Collecting data for 3 tickers with lookback 2 Y and bar size 1 day
+2025-04-26 12:45:12,630 - __main__ - INFO - Connecting to Interactive Brokers at 127.0.0.1:7497 with client ID 1
+2025-04-26 12:45:16,633 - __main__ - ERROR - Connection timed out after 30 seconds
+2025-04-26 12:45:16,634 - __main__ - ERROR - Please check that TWS/Gateway is running and that API connections are enabled
+2025-04-26 12:45:16,635 - __main__ - ERROR - Failed to connect. Cannot collect data.
+2025-04-26 12:45:16,635 - __main__ - INFO - 
+Data collection complete!
+2025-04-26 12:45:16,635 - __main__ - INFO - Processed 0 tickers
+2025-04-26 12:45:16,635 - __main__ - INFO - Success: 0
+2025-04-26 12:45:16,635 - __main__ - INFO - Errors: 0
+2025-04-26 12:45:16,635 - __main__ - INFO - 
+Database Statistics:
+2025-04-26 12:45:16,636 - __main__ - INFO - Database contains 13 symbols
+2025-04-26 12:45:16,653 - __main__ - INFO - DatetimeIndex(['2023-04-26',        'NaT',        'NaT',        'NaT',
+                      'NaT', '2023-04-27',        'NaT',        'NaT',
+                      'NaT',        'NaT',
+               ...
+               '2025-04-23',        'NaT',        'NaT',        'NaT',
+                      'NaT', '2025-04-24',        'NaT',        'NaT',
+                      'NaT',        'NaT'],
+              dtype='datetime64[ns]', name='datetime', length=2497, freq=None)
+2025-04-26 12:45:16,654 - __main__ - ERROR - Unhandled exception: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-04-26 12:45:16,654 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/martinwright/Documents/Projects/trading/hmm_atr_strategy.py", line 666, in main
+    await collect_data_mode(args)
+  File "/Users/martinwright/Documents/Projects/trading/hmm_atr_strategy.py", line 521, in collect_data_mode
+    collector.show_database_stats()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/martinwright/Documents/Projects/trading/hmm_atr_strategy.py", line 288, in show_database_stats
+    df = df[not df.index.isnull()]
+            ^^^^^^^^^^^^^^^^^^^^^
+ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+2025-04-26 12:45:57,023 - __main__ - INFO - Starting HMM-ATR Strategy in collect mode
+2025-04-26 12:45:57,023 - __main__ - INFO - Loaded 3 tickers from tickers.txt
+2025-04-26 12:45:57,025 - __main__ - INFO - Collecting data for 3 tickers with lookback 2 Y and bar size 1 day
+2025-04-26 12:45:57,025 - __main__ - INFO - Connecting to Interactive Brokers at 127.0.0.1:7497 with client ID 1
+2025-04-26 12:46:01,027 - __main__ - ERROR - Connection timed out after 30 seconds
+2025-04-26 12:46:01,028 - __main__ - ERROR - Please check that TWS/Gateway is running and that API connections are enabled
+2025-04-26 12:46:01,028 - __main__ - ERROR - Failed to connect. Cannot collect data.
+2025-04-26 12:46:01,028 - __main__ - INFO - 
+Data collection complete!
+2025-04-26 12:46:01,028 - __main__ - INFO - Processed 0 tickers
+2025-04-26 12:46:01,028 - __main__ - INFO - Success: 0
+2025-04-26 12:46:01,028 - __main__ - INFO - Errors: 0
+2025-04-26 12:46:01,029 - __main__ - INFO - 
+Database Statistics:
+2025-04-26 12:46:01,030 - __main__ - INFO - Database contains 13 symbols
+2025-04-26 12:46:01,051 - __main__ - INFO - DatetimeIndex(['2023-04-26',        'NaT',        'NaT',        'NaT',
+                      'NaT', '2023-04-27',        'NaT',        'NaT',
+                      'NaT',        'NaT',
+               ...
+               '2025-04-23',        'NaT',        'NaT',        'NaT',
+                      'NaT', '2025-04-24',        'NaT',        'NaT',
+                      'NaT',        'NaT'],
+              dtype='datetime64[ns]', name='datetime', length=2497, freq=None)
+2025-04-26 12:46:01,054 - __main__ - INFO -   AAPL: 501 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T15:42:51.055449
+2025-04-26 12:46:01,085 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-26 12:46:01,086 - __main__ - INFO -   BMY: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:29:51.659517
+2025-04-26 12:46:01,107 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-26 12:46:01,107 - __main__ - INFO -   GOOG: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:27:39.405022
+2025-04-26 12:46:01,126 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-26 12:46:01,126 - __main__ - INFO -   HON: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:29:20.964048
+2025-04-26 12:46:01,143 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-26 12:46:01,144 - __main__ - INFO -   M: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:27:09.233268
+2025-04-26 12:46:01,160 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-26 12:46:01,161 - __main__ - INFO -   MSFT: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:28:26.929185
+2025-04-26 12:46:01,179 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-26 12:46:01,180 - __main__ - INFO -   OXY: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:25:45.284626
+2025-04-26 12:46:01,198 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+                             NaT, 2025-04-23 09:30:00-04:00,
+       2025-04-23 10:00:00-04:00, 2025-04-23 12:00:00-04:00,
+       2025-04-23 14:00:00-04:00,                       NaT,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=2361)
+2025-04-26 12:46:01,199 - __main__ - INFO -   RKLB: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:24:51.191967
+2025-04-26 12:46:01,203 - __main__ - INFO - DatetimeIndex(['2023-04-26',        'NaT',        'NaT',        'NaT',
+                      'NaT', '2023-04-27',        'NaT',        'NaT',
+                      'NaT',        'NaT',
+               ...
+               '2025-04-23',        'NaT',        'NaT',        'NaT',
+                      'NaT', '2025-04-24',        'NaT',        'NaT',
+                      'NaT',        'NaT'],
+              dtype='datetime64[ns]', name='datetime', length=2497, freq=None)
+2025-04-26 12:46:01,204 - __main__ - INFO -   TSLA: 501 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T15:42:53.486018
+2025-04-26 12:46:01,220 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-26 12:46:01,221 - __main__ - INFO -   V: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:26:45.280479
+2025-04-26 12:46:01,238 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-26 12:46:01,238 - __main__ - INFO -   VRTX: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:28:02.913549
+2025-04-26 12:46:01,255 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-26 12:46:01,255 - __main__ - INFO -   WM: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:28:57.379788
+2025-04-26 12:46:01,273 - __main__ - INFO - Index([2023-04-26 09:30:00-04:00, 2023-04-26 10:00:00-04:00,
+       2023-04-26 12:00:00-04:00, 2023-04-26 14:00:00-04:00,
+       2023-04-27 09:30:00-04:00, 2023-04-27 10:00:00-04:00,
+       2023-04-27 12:00:00-04:00, 2023-04-27 14:00:00-04:00,
+       2023-04-28 09:30:00-04:00, 2023-04-28 10:00:00-04:00,
+       ...
+       2025-04-22 12:00:00-04:00, 2025-04-22 14:00:00-04:00,
+       2025-04-23 09:30:00-04:00, 2025-04-23 10:00:00-04:00,
+       2025-04-23 12:00:00-04:00, 2025-04-23 14:00:00-04:00,
+       2025-04-24 09:30:00-04:00, 2025-04-24 10:00:00-04:00,
+       2025-04-24 12:00:00-04:00, 2025-04-24 14:00:00-04:00],
+      dtype='object', name='datetime', length=1996)
+2025-04-26 12:46:01,273 - __main__ - INFO -   XYZ: 1996 bars, 2023-04-26 to 2025-04-24, last updated: 2025-04-25T14:26:14.838919

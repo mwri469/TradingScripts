@@ -1,4 +1,3 @@
-AAPL
-RKLB
 TSLA
-
+RKLB
+GE

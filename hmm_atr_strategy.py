@@ -5,24 +5,57 @@ import pandas as pd
 from collections import deque
 from datetime import datetime
 import os
+import logging
+import sys
+import argparse
 from hmmlearn import hmm
 from ib_async import IB, Stock, MarketOrder, util
 from sklearn.preprocessing import StandardScaler
 
 DB_PATH = 'market_data.db'
 
-globals = {
-    'logging': 2  # 0: errors, 1: warnings, 2: verbose 
-}
+def setup_logger():
+    """Configure logging for the application."""
+    # Configure root logger to see all IB logs
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    
+    # Create our module logger
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)  # Set to DEBUG for more verbose output
+    
+    # Create console handler
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.INFO)
+    
+    # Create file handler
+    file_handler = logging.FileHandler('hmm_atr_strategy.log')
+    file_handler.setLevel(logging.DEBUG)
+    
+    # Create formatter and add it to the handlers
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+    
+    # Add handlers to logger if they don't exist
+    if not logger.handlers:
+        logger.addHandler(console_handler)
+        logger.addHandler(file_handler)
+        
+    return logger
 
-def logging(**kwargs):
-    """Prints log messages with timestamp and any provided key-value pairs"""
+# Create the logger instance
+logger = setup_logger()
+
+def log_message(**kwargs):
+    """Legacy logging function for backward compatibility"""
     timestamp = datetime.now().strftime("%Y-%m-%d::%H.%M.%S")
-    print(f">>> {timestamp}", end=" ")
+    message = f">>> {timestamp} "
     
     for k, v in kwargs.items():
-        print(f"{k}: {v}", end=" ")
-    print()  # New line after the log entry
+        message += f"{k}: {v} "
+    
+    logger.info(message)
 
 def load_tickers(file_path='tickers.txt'):
     """Load ticker symbols from a text file."""
@@ -30,9 +63,9 @@ def load_tickers(file_path='tickers.txt'):
     try:
         with open(file_path, 'r') as f:
             tickers = [line.strip() for line in f if line.strip()]
-        print(f"Loaded {len(tickers)} tickers from {file_path}")
+        logger.info(f"Loaded {len(tickers)} tickers from {file_path}")
     except FileNotFoundError:
-        print(f"Error: File {file_path} not found.")
+        logger.error(f"Error: File {file_path} not found.")
     return tickers
 
 class DataHandler:
@@ -68,7 +101,7 @@ class DataHandler:
     def store_bars(self, symbol: str, df: pd.DataFrame):
         """Insert new bars into the database."""
         if df.empty:
-            print(f"No data to store for {symbol}")
+            logger.warning(f"No data to store for {symbol}")
             return 0
             
         records = []
@@ -142,33 +175,52 @@ class DataCollector:
         self.ib = IB()
         self.data_handler = DataHandler(db_path)
         
-    async def connect(self, host='127.0.0.1', port=7497, client_id=1):
+    async def connect(self, host='127.0.0.1', port=7497, client_id=1, timeout=30):
         """Connect to Interactive Brokers."""
         if not self.ib.isConnected():
-            await self.ib.connectAsync(host, port, clientId=client_id)
-            print("Connected to Interactive Brokers")
+            logger.info(f"Connecting to Interactive Brokers at {host}:{port} with client ID {client_id}")
+            
+            try:
+                self.ib.RequestTimeout = max(timeout, 60)  # At least 60 seconds
+                await self.ib.connectAsync(host, port, clientId=client_id)
+                logger.info("Connected to Interactive Brokers")
+                return True
+            except asyncio.TimeoutError:
+                logger.error(f"Connection timed out after {timeout} seconds")
+                logger.error("Please check that TWS/Gateway is running and that API connections are enabled")
+                return False
+            except ConnectionRefusedError:
+                logger.error(f"Connection refused at {host}:{port}")
+                logger.error("Please verify TWS/Gateway is running and accepting connections")
+                return False
+            except Exception as e:
+                logger.error(f"Failed to connect to IB: {e}")
+                return False
+        return True
         
     async def disconnect(self):
         """Disconnect from Interactive Brokers."""
         if self.ib.isConnected():
             self.ib.disconnect()
-            print("Disconnected from Interactive Brokers")
+            logger.info("Disconnected from Interactive Brokers")
     
     async def collect_data(self, symbols, lookback='365 D', bar_size='1 day', exchange='SMART', currency='USD'):
         """Collect historical data for multiple symbols."""
-        await self.connect()
+        connection_success = await self.connect()
+        if not connection_success:
+            logger.error("Failed to connect. Cannot collect data.")
+            return []
         
         results = []
         for symbol in symbols:
-            print(f"Collecting data for {symbol}...")
+            logger.info(f"Collecting data for {symbol}...")
             contract = Stock(symbol, exchange, currency)
             
             try:
                 await self.ib.qualifyContractsAsync(contract)
-                print(f"Contract qualified: {contract}")
+                logger.debug(f"Contract qualified: {contract}")
                 
                 # Request historical data
-                
                 bars = await self.ib.reqHistoricalDataAsync(
                     contract, 
                     endDateTime='', 
@@ -189,21 +241,21 @@ class DataCollector:
                         
                         # Store in database
                         stored = self.data_handler.store_bars(symbol, df)
-                        print(f"Stored {stored} bars for {symbol}")
+                        logger.info(f"Stored {stored} bars for {symbol}")
                         results.append({
                             'symbol': symbol,
                             'status': 'success',
                             'bars': len(df)
                         })
                     else:
-                        print(f"No data received for {symbol}")
+                        logger.warning(f"No data received for {symbol}")
                         results.append({
                             'symbol': symbol,
                             'status': 'no_data',
                             'bars': 0
                         })
                 else:
-                    print(f"No bars received for {symbol}")
+                    logger.warning(f"No bars received for {symbol}")
                     results.append({
                         'symbol': symbol,
                         'status': 'no_bars',
@@ -214,7 +266,7 @@ class DataCollector:
                 await asyncio.sleep(1)
                 
             except Exception as e:
-                print(f"Error collecting data for {symbol}: {e}")
+                logger.error(f"Error collecting data for {symbol}: {e}")
                 results.append({
                     'symbol': symbol,
                     'status': 'error',
@@ -227,14 +279,16 @@ class DataCollector:
     def show_database_stats(self):
         """Show statistics about the database."""
         symbols = self.data_handler.get_symbols()
-        print(f"Database contains {len(symbols)} symbols")
+        logger.info(f"Database contains {len(symbols)} symbols")
         
         for symbol in symbols:
             df = self.data_handler.load_bars(symbol)
             info = self.data_handler.get_symbol_info(symbol)
+            logger.info(df.index)
+            df = df[df.index.notnull()]
             date_range = f"{df.index.min().date()} to {df.index.max().date()}" if not df.empty else "No data"
             
-            print(f"  {symbol}: {len(df)} bars, {date_range}, last updated: {info['last_update'] if info else 'Unknown'}")
+            logger.info(f"  {symbol}: {len(df)} bars, {date_range}, last updated: {info['last_update'] if info else 'Unknown'}")
 
 class HMMModel:
     """Wraps HMM training and prediction on ATR series."""
@@ -323,7 +377,7 @@ class HMMATRStrategy:
         self.logging = 1
 
     def prepare(self, df: pd.DataFrame):
-        logging(function="prepare", df_shape=df.shape)
+        log_message(function="prepare", df_shape=df.shape)
         # Compute ATR and train model
         df2 = self.model.compute_atr(df, self.period)
         self.model.fit(df2.atr.values)
@@ -363,16 +417,24 @@ class LiveTrader(HMMATRStrategy):
         self.contract = None
         self.last_dt = None
 
-    async def connect(self):
-        await self.ib.connectAsync('127.0.0.1', 7497, clientId=1)
-        self.contract = Stock(self.symbol, self.exchange, self.currency)
-        await self.ib.qualifyContractsAsync(self.contract)
+    async def connect(self, host='127.0.0.1', port=7497, client_id=1, timeout=30):
+        logger.info(f"Connecting to IB at {host}:{port} with client ID {client_id}")
+        try:
+            self.ib.RequestTimeout = max(timeout, 60)
+            await self.ib.connectAsync(host, port, clientId=client_id)
+            logger.info("Connected to Interactive Brokers")
+            self.contract = Stock(self.symbol, self.exchange, self.currency)
+            await self.ib.qualifyContractsAsync(self.contract)
+            return True
+        except Exception as e:
+            logger.error(f"Connection error: {e}")
+            return False
 
     async def initialize(self, lookback='14 D', bar_size='5 mins'):
         # Load from DB or fetch
         df = self.data.load_bars(self.symbol)
         if df.empty:
-            print("DB empty, fetching history...")
+            logger.info("DB empty, fetching history...")
             bars = await self.ib.reqHistoricalDataAsync(
                 self.contract, '', lookback, bar_size, 'TRADES', False, 1
             )
@@ -382,25 +444,40 @@ class LiveTrader(HMMATRStrategy):
         self.prepare(df)
         self.last_dt = df.index[-1]
 
-    async def run(self):
-        await self.connect()
+    async def run(self, host='127.0.0.1', port=7497, client_id=1, timeout=30):
+        connection_success = await self.connect(host, port, client_id, timeout)
+        if not connection_success:
+            logger.error("Failed to connect. Cannot start live trading.")
+            return
+            
         await self.initialize()
-        while True:
-            bars = await self.ib.reqHistoricalDataAsync(
-                self.contract, '', '1 D', '5 mins', 'TRADES', False, 1
-            )
-            df_live = util.df(bars).set_index('date')
-            # filter for new bars
-            new_df = df_live[df_live.index > self.last_dt]
-            for dt, row in new_df.iterrows():
-                sig = self.signal(row)
-                if sig:
-                    print(f"{dt} signal: {sig}")
-                    await self._execute(sig)
-                # store bar
-                self.data.store_bars(self.symbol, pd.DataFrame([row], index=[dt]))
-                self.last_dt = dt
-            await asyncio.sleep(300)
+        logger.info(f"Starting live trading for {self.symbol}")
+        
+        try:
+            while True:
+                bars = await self.ib.reqHistoricalDataAsync(
+                    self.contract, '', '1 D', '5 mins', 'TRADES', False, 1
+                )
+                df_live = util.df(bars).set_index('date')
+                # filter for new bars
+                new_df = df_live[df_live.index > self.last_dt]
+                for dt, row in new_df.iterrows():
+                    sig = self.signal(row)
+                    if sig:
+                        logger.info(f"{dt} signal: {sig}")
+                        await self._execute(sig)
+                    # store bar
+                    self.data.store_bars(self.symbol, pd.DataFrame([row], index=[dt]))
+                    self.last_dt = dt
+                await asyncio.sleep(300)
+        except KeyboardInterrupt:
+            logger.info("Received keyboard interrupt, shutting down...")
+        except Exception as e:
+            logger.error(f"Error in live trading loop: {e}")
+        finally:
+            if self.ib.isConnected():
+                self.ib.disconnect()
+                logger.info("Disconnected from IB")
 
     async def _execute(self, signal):
         # simple fixed size
@@ -412,129 +489,206 @@ class LiveTrader(HMMATRStrategy):
         if signal == 'BUY' and current <= 0:
             order = MarketOrder('BUY', qty)
             await self.ib.placeOrderAsync(self.contract, order)
+            logger.info(f"Placed BUY order for {qty} shares of {self.symbol}")
         elif signal == 'SELL' and current >= 0:
             order = MarketOrder('SELL', qty)
             await self.ib.placeOrderAsync(self.contract, order)
+            logger.info(f"Placed SELL order for {qty} shares of {self.symbol}")
 
-async def collect_data_mode(tickers_file='tickers.txt', lookback='365 D', bar_size='1 day'):
+async def collect_data_mode(args):
     """Special mode to just collect data for all tickers."""
-    tickers = load_tickers(tickers_file)
+    tickers = load_tickers(args.tickers)
     if not tickers:
-        print("No tickers found in the file.")
+        logger.error("No tickers found in the file.")
         return
         
-    collector = DataCollector()
-    results = await collector.collect_data(tickers, lookback, bar_size)
+    collector = DataCollector(args.db)
+    logger.info(f"Collecting data for {len(tickers)} tickers with lookback {args.lookback} and bar size {args.barsize}")
+    results = await collector.collect_data(tickers, args.lookback, args.barsize, args.exchange, args.currency)
     
     # Print summary
-    print("\nData collection complete!")
-    print(f"Processed {len(results)} tickers")
+    logger.info("\nData collection complete!")
+    logger.info(f"Processed {len(results)} tickers")
     
     success = sum(1 for r in results if r['status'] == 'success')
     errors = sum(1 for r in results if r['status'] in ['error', 'no_data', 'no_bars'])
     
-    print(f"Success: {success}")
-    print(f"Errors: {errors}")
+    logger.info(f"Success: {success}")
+    logger.info(f"Errors: {errors}")
     
     # Show database stats
-    print("\nDatabase Statistics:")
+    logger.info("\nDatabase Statistics:")
     collector.show_database_stats()
     
     await collector.disconnect()
 
-async def train_model_mode(symbol, period=14, n_states=2):
+async def train_model_mode(args):
     """Train and test a model for a single symbol."""
-    handler = DataHandler()
-    df = handler.load_bars(symbol)
+    handler = DataHandler(args.db)
+    df = handler.load_bars(args.symbol)
     
     if df.empty:
-        print(f"No data found for {symbol}. Please collect data first.")
+        logger.error(f"No data found for {args.symbol}. Please collect data first.")
         return
         
-    strat = HMMATRStrategy(period, n_states)
+    strat = HMMATRStrategy(args.period, args.states)
     processed_df = strat.prepare(df)
     
     # Print some statistics
-    print(f"\nTrained HMM model for {symbol}")
-    print(f"Data period: {df.index.min().date()} to {df.index.max().date()}")
-    print(f"Number of bars: {len(df)}")
-    print(f"ATR statistics:")
+    logger.info(f"\nTrained HMM model for {args.symbol}")
+    logger.info(f"Data period: {df.index.min().date()} to {df.index.max().date()}")
+    logger.info(f"Number of bars: {len(df)}")
+    logger.info(f"ATR statistics:")
     if 'atr' in processed_df.columns:
-        print(f"  Min: {processed_df.atr.min():.4f}")
-        print(f"  Max: {processed_df.atr.max():.4f}")
-        print(f"  Mean: {processed_df.atr.mean():.4f}")
-        print(f"  Std: {processed_df.atr.std():.4f}")
+        logger.info(f"  Min: {processed_df.atr.min():.4f}")
+        logger.info(f"  Max: {processed_df.atr.max():.4f}")
+        logger.info(f"  Mean: {processed_df.atr.mean():.4f}")
+        logger.info(f"  Std: {processed_df.atr.std():.4f}")
     
     # Run a quick backtest
     bt = Backtester(processed_df, strat)
     perf = bt.run()
-    print(f"\nBacktest Results:")
-    print(f"PNL: ${perf['pnl']:.2f}")
-    print(f"Number of trades: {len(perf['trades'])}")
+    logger.info(f"\nBacktest Results:")
+    logger.info(f"PNL: ${perf['pnl']:.2f}")
+    logger.info(f"Number of trades: {len(perf['trades'])}")
     
     # Print trades summary
     trades_df = perf['trades']
     if not trades_df.empty:
         buy_trades = trades_df[trades_df['action'] == 'BUY']
         sell_trades = trades_df[trades_df['action'] == 'SELL']
-        print(f"Buy trades: {len(buy_trades)}")
-        print(f"Sell trades: {len(sell_trades)}")
+        logger.info(f"Buy trades: {len(buy_trades)}")
+        logger.info(f"Sell trades: {len(sell_trades)}")
 
-async def main(mode='backtest', symbol=None, tickers_file='tickers.txt'):
+async def backtest_mode(args):
+    """Run a backtest for a strategy on a symbol."""
+    handler = DataHandler(args.db)
+    df = handler.load_bars(args.symbol)
+    if df.empty:
+        logger.error(f"No data found for {args.symbol}. Please collect data first.")
+        return
+    
+    logger.info(f"Running backtest for {args.symbol} with period={args.period}, states={args.states}")
+    strat = HMMATRStrategy(args.period, args.states)
+    processed_df = strat.prepare(df)
+    bt = Backtester(processed_df, strat)
+    perf = bt.run()
+    
+    logger.info(f"Backtest Results for {args.symbol}:")
+    logger.info(f"PNL: ${perf['pnl']:.2f}")
+    logger.info(f"Final cash: ${perf['final_cash']:.2f}")
+    logger.info(f"Number of trades: {len(perf['trades'])}")
+    
+    # Print trades summary
+    if not perf['trades'].empty:
+        logger.info("\nTrade Summary:")
+        logger.info(perf['trades'].head())
+
+async def live_mode(args):
+    """Run the strategy in live trading mode."""
+    logger.info(f"Starting live trading for {args.symbol}")
+    logger.info(f"Connecting to IB at {args.host}:{args.port} with client ID {args.clientid}")
+    
+    trader = LiveTrader(args.symbol, args.period, args.states, args.exchange, args.currency)
+    await trader.run(args.host, args.port, args.clientid, args.timeout)
+
+async def info_mode(args):
+    """Show information about the database."""
+    collector = DataCollector(args.db)
+    collector.show_database_stats()
+
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description='HMM-ATR Trading Strategy')
+    
+    # Common arguments
+    parser.add_argument('--db', default='market_data.db', help='Path to SQLite database file')
+    parser.add_argument('--host', default='127.0.0.1', help='TWS/Gateway host address')
+    parser.add_argument('--port', type=int, default=7497, help='TWS/Gateway port (7496/7497 for TWS, 4001/4002 for Gateway)')
+    parser.add_argument('--clientid', type=int, default=1, help='Client ID for IB connection')
+    parser.add_argument('--timeout', type=int, default=30, help='Connection timeout in seconds')
+    parser.add_argument('--exchange', default='SMART', help='Exchange to use')
+    parser.add_argument('--currency', default='USD', help='Currency to use')
+    parser.add_argument('--loglevel', default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], 
+                      help='Logging level')
+    
+    subparsers = parser.add_subparsers(dest='mode', help='Operation mode')
+    
+    # Collect data mode
+    collect_parser = subparsers.add_parser('collect', help='Collect historical data')
+    collect_parser.add_argument('--tickers', default='tickers.txt', help='Path to file with ticker symbols')
+    collect_parser.add_argument('--lookback', default='2 Y', help='Lookback period for historical data')
+    collect_parser.add_argument('--barsize', default='1 day', help='Bar size for historical data')
+    
+    # Train mode
+    train_parser = subparsers.add_parser('train', help='Train and test a model')
+    train_parser.add_argument('symbol', help='Symbol to train the model on')
+    train_parser.add_argument('--period', type=int, default=14, help='ATR period')
+    train_parser.add_argument('--states', type=int, default=2, help='Number of HMM states')
+    
+    # Backtest mode
+    backtest_parser = subparsers.add_parser('backtest', help='Run a backtest')
+    backtest_parser.add_argument('symbol', help='Symbol to backtest')
+    backtest_parser.add_argument('--period', type=int, default=14, help='ATR period')
+    backtest_parser.add_argument('--states', type=int, default=2, help='Number of HMM states')
+    
+    # Live mode
+    live_parser = subparsers.add_parser('live', help='Run live trading')
+    live_parser.add_argument('symbol', help='Symbol to trade')
+    live_parser.add_argument('--period', type=int, default=14, help='ATR period')
+    live_parser.add_argument('--states', type=int, default=2, help='Number of HMM states')
+    
+    # Info mode
+    info_parser = subparsers.add_parser('info', help='Show database information')
+    
+    args = parser.parse_args()
+    
+    # Set default mode if none specified
+    if not args.mode:
+        args.mode = 'info'
+        
+    return args
+
+async def main():
     """Main entry point with different modes."""
-    if mode == 'collect':
-        await collect_data_mode(tickers_file)
-    elif mode == 'train':
-        if not symbol:
-            print("Error: Symbol is required for training mode.")
-            return
-        await train_model_mode(symbol)
-    elif mode == 'backtest':
-        if not symbol:
-            print("Error: Symbol is required for backtest mode.")
-            return
-        handler = DataHandler()
-        df = handler.load_bars(symbol)
-        if df.empty:
-            print(f"No data found for {symbol}. Please collect data first.")
-            return
-        strat = HMMATRStrategy()
-        strat.prepare(df)
-        bt = Backtester(df, strat)
-        perf = bt.run()
-        print(f"PNL: {perf['pnl']}, Trades:\n", perf['trades'])
-    elif mode == 'live':
-        if not symbol:
-            print("Error: Symbol is required for live mode.")
-            return
-        trader = LiveTrader(symbol)
-        await trader.run()
-    elif mode == 'info':
-        collector = DataCollector()
-        collector.show_database_stats()
-    else:
-        print(f"Unknown mode: {mode}")
-        print("Available modes: collect, train, backtest, live, info")
+    args = parse_args()
+    
+    # Configure logging level based on arguments
+    logging_level = getattr(logging, args.loglevel.upper())
+    logger.setLevel(logging_level)
+    for handler in logger.handlers:
+        handler.setLevel(logging_level)
+    
+    logger.info(f"Starting HMM-ATR Strategy in {args.mode} mode")
+    
+    try:
+        if args.mode == 'collect':
+            await collect_data_mode(args)
+        elif args.mode == 'train':
+            await train_model_mode(args)
+        elif args.mode == 'backtest':
+            await backtest_mode(args)
+        elif args.mode == 'live':
+            await live_mode(args)
+        elif args.mode == 'info':
+            await info_mode(args)
+        else:
+            logger.error(f"Unknown mode: {args.mode}")
+            logger.info("Available modes: collect, train, backtest, live, info")
+    except KeyboardInterrupt:
+        logger.info("Keyboard interrupt received, shutting down...")
+    except Exception as e:
+        logger.error(f"Unhandled exception: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
 
 if __name__ == '__main__':
-    import sys
+    # Create a new event loop
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     
-    # Parse command line arguments
-    args = sys.argv[1:]
-    
-    # Default values
-    mode = 'backtest'
-    symbol = None
-    tickers_file = 'tickers.txt'
-    
-    # Basic command line argument parsing
-    if args:
-        mode = args[0]
-        
-    if len(args) > 1:
-        if mode in ['train', 'backtest', 'live']:
-            symbol = args[1]
-        elif mode == 'collect':
-            tickers_file = args[1]
-    
-    asyncio.run(main(mode, symbol, tickers_file))
+    try:
+        loop.run_until_complete(main())
+    finally:
+        # Clean shutdown
+        loop.close()
